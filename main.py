@@ -142,12 +142,16 @@ def put_attribute_to_db(column_name, value, item, conn=None):
     )
 
 
+"""Establish connection with SimpleDB
+"""
 def get_connection():
     conn = boto3.client('sdb', region_name=AWS_REGION, aws_access_key_id=ACCESS_KEY_ID,
                         aws_secret_access_key=ACCESS_KEY)
     return conn
 
 
+"""Import CSV file
+"""
 def import_csv(conn, filename):
     if conn is None:
         conn = get_connection()
@@ -162,6 +166,8 @@ def import_csv(conn, filename):
                 item += 1
 
 
+"""Create a SimpleDB database domain
+"""
 def create_domain(conn=None):
     if conn is None:
         conn = get_connection()
