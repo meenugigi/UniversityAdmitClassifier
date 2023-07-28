@@ -88,6 +88,7 @@ def data_cleanup():
       string_data.loc[string_data[col] == '', col] = data_key[0]
       string_data.loc[string_data[col] == '0', col] = data_key[0]
     data = pd.concat([numeric_data, string_data], axis=1, join="inner")
+    # run below method to retrain model (pkl files)
     # group_data_category(data)
     return data, numeric_data, string_data
 
@@ -127,10 +128,10 @@ def group_data_category(data):
                                                       'Other', data['termAndYear']))
 
     # string_data.termAndYear_updated.value_counts()
-
     data = data.drop(['major', 'specialization', 'department', 'termAndYear'], axis=1)
     data = data.rename(columns={"specialization_updated": "specialization", "major_updated": "major",
                                 "department_updated": "department", "termAndYear_updated": "termAndYear"})
+    # run below method to retrain model (pkl files)
     # data_encoding(data)
     return data
 
@@ -155,6 +156,7 @@ def data_encoding(data):
 
     data['univName'] = le.fit_transform(data.univName.values)
     mapping_univName = dict(zip(le.classes_, range(len(le.classes_))))
+    # run below method to retrain model (pkl files)
     # build_model(data)
     return  mapping_major,mapping_specialization, mapping_program, mapping_department, mapping_termAndYear, \
             mapping_univName
@@ -176,13 +178,18 @@ def build_model(data):
     # selecting x and y values for model training
     # x values are independant values.
     # y values are the dependant values
-    x = data.iloc[:, [1,2,3,4,5,6,7,8,9,10,12,14,15,17,18]]
+    x = data.iloc[:, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 17, 18]]
     y = data.iloc[:, [11]]
 
     """## Splitting data into training and testing data"""
 
     from sklearn.model_selection import train_test_split
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=83)
+    # training models to find model with highest accuracy rates
+    logistic_regression(x_train, x_test, y_train, y_test)
+    naive_bayes(x_train, x_test, y_train, y_test)
+    random_forest(x_train, x_test, y_train, y_test)
+    nearest_neighbours(x_train, x_test, y_train, y_test)
     decision_tree(x_train, x_test, y_train, y_test)
 
 
@@ -201,7 +208,7 @@ def logistic_regression(x_train, x_test, y_train, y_test):
     y_pred = pipe_lr.predict(x_test)
 
     from sklearn.metrics import accuracy_score
-    accuracy_score(y_pred, y_test)
+    print("Logistic Regression: ",accuracy_score(y_pred, y_test))
     pickle.dump(pipe_lr, open('LogisticRegressionModel.pkl', 'wb'))
 
 
@@ -221,7 +228,7 @@ def naive_bayes(x_train, x_test, y_train, y_test):
     y_pred = pipe_nb.predict(x_test)
 
     from sklearn.metrics import accuracy_score
-    accuracy_score(y_pred, y_test)
+    print("Naive Bayes: ",accuracy_score(y_pred, y_test))
     pickle.dump(pipe_nb, open('NaiveBayesModel.pkl', 'wb'))
 
 
@@ -237,12 +244,20 @@ def random_forest(x_train, x_test, y_train, y_test):
 
     rfc = RandomForestClassifier()
     pipe_rfc = make_pipeline(scaler, rfc)
+
     pipe_rfc.fit(x_train, y_train)
+    # printing Feature importances
+    # print("Feature importances: ",rfc.feature_importances_)
+    # printing columns passed for model fitting
+    # print(list(x_train.columns))
+    # print(list(y_train.columns))
+    # print("Features provided during predict time:")
+    # print(x_test.columns.tolist())
     y_pred = pipe_rfc.predict(x_test)
 
     from sklearn.metrics import classification_report
     from sklearn.metrics import accuracy_score
-    accuracy_score(y_pred, y_test)
+    print("Random Forest: ",accuracy_score(y_pred, y_test))
     pickle.dump(pipe_rfc, open('RandomForestClassifierModel.pkl', 'wb'))
 
 
@@ -260,7 +275,7 @@ def nearest_neighbours(x_train, x_test, y_train, y_test):
     y_pred = pipe_knn.predict(x_test)
 
     from sklearn.metrics import accuracy_score
-    accuracy_score(y_pred, y_test)
+    print("Nearest Neighbour: ",accuracy_score(y_pred, y_test))
     pickle.dump(pipe_knn, open('KNearestClassifierModel.pkl', 'wb'))
 
 
@@ -278,7 +293,7 @@ def decision_tree(x_train, x_test, y_train, y_test):
     pipe_dtc.fit(x_train, y_train)
     y_pred = pipe_dtc.predict(x_test)
     from sklearn.metrics import accuracy_score
-    print(accuracy_score(y_pred, y_test))
+    print("Decision tree: " ,accuracy_score(y_pred, y_test))
     pickle.dump(pipe_dtc, open('DecisionTreeModel.pkl', 'wb'))
 
 

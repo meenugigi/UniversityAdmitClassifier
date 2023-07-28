@@ -21,9 +21,12 @@ DOMAIN_NAME = "University"
 
 app = Flask(__name__)
 
-# trained model
+# opening the trained model
 pipe = pickle.load(open("DecisionTreeModel.pkl", 'rb'))
 
+import gzip
+with gzip.open('Compressed_DecisionTreeModel.pkl.gz', 'wb') as f:
+    pickle.dump(pipe, f)
 class items:
     Item = 1467
 
@@ -74,15 +77,15 @@ def takeData():
     cgpascale = request.form.get('cgpascale')
     university = request.form.get('university')
     university_decoded = reverse_encoding(university, index.d6)
-
     researchexp = request.form.get('researchexp')
     department = request.form.get('department')
+    department_decoded = reverse_encoding(department, index.d4)
     admituniv_1 = request.form.get('admituniv_1')
     admituniv_2 = request.form.get('admituniv_2')
 
     list = [major_decoded, indexp, specialization_decoded, grev, greq, grea, toefl, program_decoded,
             internExp, journals, tey_decoded, conpub, cgpa, cgpascale, university_decoded,
-            major, researchexp, department, admituniv_1, admituniv_2, specialization, program, tey]
+            major, researchexp, department, admituniv_1, admituniv_2, specialization, program, tey, department_decoded]
     return list
 
 
@@ -92,12 +95,12 @@ Return: predicted output in integer encoded format
 @app.route('/predict', methods=['POST'])
 def predict():
     list = takeData()
-    input = pd.DataFrame([[list[0], list[1], list[2], list[3], list[4], list[5], list[6],
-                           list[7], list[8], list[9],
-                           list[10], list[11], list[12], list[13], list[14]]],
-                         columns=['major', 'industryExp', 'specialization', 'greV', 'greQ', 'greA',
-                                  'toeflScore', 'program', 'internExp', 'journalPubs', 'termAndYear',
-                                  'confPubs', 'cgpa', 'cgpaScale', 'univName'])
+    input = pd.DataFrame([[list[1], list[6], list[8], list[3], list[11], list[4], list[5],
+                           list[9], list[12], list[13],list[7], list[14], list[2], list[0],
+                           list[23], list[10]]],
+                         columns=['industryExp', 'toeflScore', 'internExp', 'greV', 'confPubs', 'greQ', 'greA',
+                                  'journalPubs', 'cgpa', 'cgpaScale', 'program', 'univName', 'specialization', 'major',
+                                  'department', 'termAndYear'])
 
     prediction = pipe.predict(input)[0]
     result = prediction
