@@ -13,6 +13,7 @@ from flask import Flask, render_template, request, app, abort
 import pickle
 from DataCleaningAndProcessing import data_cleanup, group_data_category, build_model, \
     reverse_encoding, data_encoding
+import gzip
 AWS_REGION = 'us-east-1'
 ACCESS_KEY_ID = 'XYZ'
 ACCESS_KEY = 'XYZ'
@@ -22,11 +23,15 @@ DOMAIN_NAME = "University"
 app = Flask(__name__)
 
 # opening the trained model
-pipe = pickle.load(open("DecisionTreeModel.pkl", 'rb'))
+# pipe = pickle.load(open("DecisionTreeModel.pkl", 'rb'))
 
-import gzip
-with gzip.open('Compressed_DecisionTreeModel.pkl.gz', 'wb') as f:
-    pickle.dump(pipe, f)
+with gzip.open('Compressed_DecisionTreeModel.pkl.gz', 'rb') as f:
+    uncompressed_data = f.read()
+
+pipe = pickle.loads(uncompressed_data)
+# import gzip
+# with gzip.open('Compressed_DecisionTreeModel.pkl.gz', 'wb') as f:
+#     pickle.dump(pipe, f)
 class items:
     Item = 1467
 

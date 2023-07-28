@@ -15,7 +15,7 @@ import pandas as pd
 import numpy as np
 import pickle
 from sklearn import preprocessing
-
+import gzip
 le = preprocessing.LabelEncoder()
 # lists required to store the encoded values
 mapping_major = {}
@@ -210,7 +210,10 @@ def logistic_regression(x_train, x_test, y_train, y_test):
     from sklearn.metrics import accuracy_score
     print("Logistic Regression: ",accuracy_score(y_pred, y_test))
     pickle.dump(pipe_lr, open('LogisticRegressionModel.pkl', 'wb'))
-
+    # compressing .pkl file using gzip
+    pickled_data = pickle.load(open("LogisticRegressionModel.pkl", 'rb'))
+    with gzip.open('Compressed_LogisticRegressionModel.pkl.gz', 'wb') as f:
+        pickle.dump(pickled_data, f)
 
 
 """Implementing the Naive Bayes Classification algorithm
@@ -230,7 +233,10 @@ def naive_bayes(x_train, x_test, y_train, y_test):
     from sklearn.metrics import accuracy_score
     print("Naive Bayes: ",accuracy_score(y_pred, y_test))
     pickle.dump(pipe_nb, open('NaiveBayesModel.pkl', 'wb'))
-
+    # compressing .pkl file using gzip
+    pickled_data = pickle.load(open("NaiveBayesModel.pkl", 'rb'))
+    with gzip.open('Compressed_NaiveBayesModel.pkl.gz', 'wb') as f:
+        pickle.dump(pickled_data, f)
 
 
 """Implementing the Random forest Classification algorithm
@@ -259,7 +265,10 @@ def random_forest(x_train, x_test, y_train, y_test):
     from sklearn.metrics import accuracy_score
     print("Random Forest: ",accuracy_score(y_pred, y_test))
     pickle.dump(pipe_rfc, open('RandomForestClassifierModel.pkl', 'wb'))
-
+    # compressing .pkl file using gzip
+    pickled_data = pickle.load(open("RandomForestClassifierModel.pkl", 'rb'))
+    with gzip.open('Compressed_RandomForestClassifierModel.pkl.gz', 'wb') as f:
+        pickle.dump(pickled_data, f)
 
 """Implementing the K Neighbors Classifier algorithm
 Determines model accuracy"""
@@ -277,6 +286,10 @@ def nearest_neighbours(x_train, x_test, y_train, y_test):
     from sklearn.metrics import accuracy_score
     print("Nearest Neighbour: ",accuracy_score(y_pred, y_test))
     pickle.dump(pipe_knn, open('KNearestClassifierModel.pkl', 'wb'))
+    # compressing .pkl file using gzip
+    pickled_data = pickle.load(open("KNearestClassifierModel.pkl", 'rb'))
+    with gzip.open('Compressed_KNearestClassifierModel.pkl.gz', 'wb') as f:
+        pickle.dump(pickled_data, f)
 
 
 """Implementing the Decision Tree Classifier algorithm
@@ -295,8 +308,10 @@ def decision_tree(x_train, x_test, y_train, y_test):
     from sklearn.metrics import accuracy_score
     print("Decision tree: " ,accuracy_score(y_pred, y_test))
     pickle.dump(pipe_dtc, open('DecisionTreeModel.pkl', 'wb'))
-
-
+    # compressing .pkl file using gzip
+    pickled_data = pickle.load(open("DecisionTreeModel.pkl", 'rb'))
+    with gzip.open('Compressed_DecisionTreeModel.pkl.gz', 'wb') as f:
+        pickle.dump(pickled_data, f)
 
 if __name__ == '__main__':
   data_cleanup()
